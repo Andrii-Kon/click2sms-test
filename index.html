@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Click2SMS Test Bench</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f7fb;
+        --panel: #ffffff;
+        --ink: #17202a;
+        --muted: #5f6b7a;
+        --line: #d9e0ea;
+        --accent: #0b7285;
+        --accent-dark: #075866;
+        --warn: #9a3412;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.45;
+      }
+
+      main {
+        width: min(960px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 28px 0 40px;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        letter-spacing: 0;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      h2 {
+        font-size: 18px;
+      }
+
+      p {
+        margin: 8px 0 0;
+        color: var(--muted);
+      }
+
+      section {
+        margin-top: 18px;
+        padding: 18px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px 12px;
+        color: var(--ink);
+        font: inherit;
+      }
+
+      textarea {
+        min-height: 88px;
+        resize: vertical;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      button,
+      a.button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        border: 0;
+        border-radius: 6px;
+        padding: 10px 14px;
+        background: var(--accent);
+        color: #fff;
+        font: inherit;
+        font-weight: 650;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      button:hover,
+      a.button:hover {
+        background: var(--accent-dark);
+      }
+
+      .secondary {
+        background: #e8eef5;
+        color: var(--ink);
+      }
+
+      .secondary:hover {
+        background: #dbe4ef;
+      }
+
+      .warning {
+        color: var(--warn);
+        font-weight: 650;
+      }
+
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+        font-size: 13px;
+      }
+
+      .log {
+        min-height: 240px;
+        max-height: 420px;
+        overflow: auto;
+        margin-top: 12px;
+        padding: 12px;
+        background: #101820;
+        color: #d7f9ff;
+        border-radius: 6px;
+        white-space: pre-wrap;
+      }
+
+      .summary {
+        white-space: pre-wrap;
+        background: #f8fafc;
+      }
+
+      @media (max-width: 700px) {
+        main {
+          width: min(100% - 24px, 960px);
+          padding-top: 18px;
+        }
+
+        .grid,
+        .actions {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Click2SMS Test Bench</h1>
+        <p>Use this page on real iOS and Android devices to observe SMS handoff, return behavior, and browser lifecycle events.</p>
+      </header>
+
+      <section>
+        <h2>SMS Payload</h2>
+        <div class="grid" style="margin-top: 12px;">
+          <div>
+            <label for="phone">Phone number</label>
+            <input id="phone" autocomplete="tel" value="+380000000000">
+          </div>
+          <div>
+            <label for="campaign">Campaign label</label>
+            <input id="campaign" value="click2sms_test">
+          </div>
+        </div>
+        <div style="margin-top: 12px;">
+          <label for="message">Message body</label>
+          <textarea id="message">Test SMS from landing page</textarea>
+        </div>
+        <p class="warning">The page can detect click/open/return signals, but it cannot confirm that the SMS was actually sent.</p>
+      </section>
+
+      <section>
+        <h2>Test Links</h2>
+        <p>Try each button and record whether the recipient and body are prefilled, whether the user returns automatically, and which events appear below.</p>
+        <div class="actions">
+          <a id="smsBodyAmp" class="button" href="#">sms:number&amp;body=...</a>
+          <a id="smsBodyQuestion" class="button" href="#">sms:number?body=...</a>
+          <a id="smstoBody" class="button" href="#">smsto:number?body=...</a>
+          <button id="jsLocation" type="button">JS location.href</button>
+          <button id="copySummary" class="secondary" type="button">Copy Summary</button>
+          <button id="clearLog" class="secondary" type="button">Clear Log</button>
+        </div>
+      </section>
+
+      <section>
+        <h2>Current URLs</h2>
+        <div id="urls" class="mono summary" style="margin-top: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 6px;"></div>
+      </section>
+
+      <section>
+        <h2>Event Log</h2>
+        <div id="log" class="mono log" aria-live="polite"></div>
+      </section>
+
+      <section>
+        <h2>Report Template</h2>
+        <textarea id="report" class="mono summary" readonly></textarea>
+      </section>
+    </main>
+
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function gtagFallback() {
+        window.dataLayer.push(arguments);
+      };
+
+      const startedAt = Date.now();
+      let lastSmsAttempt = null;
+
+      const els = {
+        phone: document.querySelector("#phone"),
+        campaign: document.querySelector("#campaign"),
+        message: document.querySelector("#message"),
+        log: document.querySelector("#log"),
+        urls: document.querySelector("#urls"),
+        report: document.querySelector("#report"),
+        smsBodyAmp: document.querySelector("#smsBodyAmp"),
+        smsBodyQuestion: document.querySelector("#smsBodyQuestion"),
+        smstoBody: document.querySelector("#smstoBody"),
+        jsLocation: document.querySelector("#jsLocation"),
+        copySummary: document.querySelector("#copySummary"),
+        clearLog: document.querySelector("#clearLog"),
+      };
+
+      function nowLabel() {
+        return new Date().toISOString();
+      }
+
+      function deviceSummary() {
+        return [
+          `userAgent: ${navigator.userAgent}`,
+          `platform: ${navigator.platform || "unknown"}`,
+          `viewport: ${window.innerWidth}x${window.innerHeight}`,
+          `visibility: ${document.visibilityState}`,
+        ].join("\n");
+      }
+
+      function logEvent(name, details = {}) {
+        const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
+        const payload = {
+          t: `${elapsed}s`,
+          event: name,
+          visibility: document.visibilityState,
+          hasFocus: document.hasFocus(),
+          ...details,
+        };
+        els.log.textContent += `${nowLabel()} ${JSON.stringify(payload)}\n`;
+        els.log.scrollTop = els.log.scrollHeight;
+        updateReport();
+      }
+
+      function track(name, params = {}) {
+        const payload = {
+          event_category: "sms",
+          campaign: els.campaign.value.trim(),
+          ...params,
+        };
+        window.gtag("event", name, payload);
+        logEvent(`gtag:${name}`, payload);
+      }
+
+      function encodedMessage() {
+        return encodeURIComponent(els.message.value);
+      }
+
+      function phone() {
+        return els.phone.value.trim();
+      }
+
+      function urls() {
+        const number = phone();
+        const body = encodedMessage();
+        return {
+          smsBodyAmp: `sms:${number}&body=${body}`,
+          smsBodyQuestion: `sms:${number}?body=${body}`,
+          smstoBody: `smsto:${number}?body=${body}`,
+        };
+      }
+
+      function renderUrls() {
+        const current = urls();
+        els.smsBodyAmp.href = current.smsBodyAmp;
+        els.smsBodyQuestion.href = current.smsBodyQuestion;
+        els.smstoBody.href = current.smstoBody;
+        els.urls.textContent = Object.entries(current)
+          .map(([key, value]) => `${key}: ${value}`)
+          .join("\n");
+        updateReport();
+      }
+
+      function markSmsAttempt(method, url) {
+        lastSmsAttempt = {
+          method,
+          url,
+          at: Date.now(),
+        };
+        track("sms_click", {
+          method,
+          sms_url_scheme: url.split(":")[0],
+          phone: phone(),
+        });
+      }
+
+      function updateReport() {
+        const current = urls();
+        els.report.value = [
+          "Click2SMS test result",
+          "",
+          "Device/browser:",
+          deviceSummary(),
+          "",
+          "URLs tested:",
+          Object.entries(current).map(([key, value]) => `- ${key}: ${value}`).join("\n"),
+          "",
+          "Manual observations:",
+          "- Recipient prefilled: yes/no",
+          "- Body prefilled: yes/no",
+          "- User returned automatically after send/cancel: yes/no",
+          "- Return action needed: Back/App switcher/browser manually",
+          "- Events on leaving page:",
+          "- Events on returning page:",
+          "",
+          "Important limitation:",
+          "The landing page can track click/open-attempt/return signals, but cannot confirm actual SMS sending.",
+        ].join("\n");
+      }
+
+      ["input", "change"].forEach((eventName) => {
+        els.phone.addEventListener(eventName, renderUrls);
+        els.message.addEventListener(eventName, renderUrls);
+        els.campaign.addEventListener(eventName, updateReport);
+      });
+
+      [
+        ["smsBodyAmp", els.smsBodyAmp],
+        ["smsBodyQuestion", els.smsBodyQuestion],
+        ["smstoBody", els.smstoBody],
+      ].forEach(([method, element]) => {
+        element.addEventListener("click", () => {
+          markSmsAttempt(method, element.href);
+        });
+      });
+
+      els.jsLocation.addEventListener("click", () => {
+        const target = urls().smstoBody;
+        markSmsAttempt("jsLocationSmsto", target);
+        window.location.href = target;
+      });
+
+      els.clearLog.addEventListener("click", () => {
+        els.log.textContent = "";
+        logEvent("log_cleared");
+      });
+
+      els.copySummary.addEventListener("click", async () => {
+        updateReport();
+        await navigator.clipboard.writeText(`${els.report.value}\n\nEvent log:\n${els.log.textContent}`);
+        logEvent("summary_copied");
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        logEvent("visibilitychange");
+        if (document.visibilityState === "visible" && lastSmsAttempt) {
+          const secondsAway = Math.round((Date.now() - lastSmsAttempt.at) / 1000);
+          track("sms_return_to_landing", {
+            method: lastSmsAttempt.method,
+            seconds_since_sms_click: secondsAway,
+          });
+        }
+      });
+
+      window.addEventListener("blur", () => logEvent("window_blur"));
+      window.addEventListener("focus", () => {
+        logEvent("window_focus");
+        if (lastSmsAttempt) {
+          const secondsAway = Math.round((Date.now() - lastSmsAttempt.at) / 1000);
+          track("sms_return_focus", {
+            method: lastSmsAttempt.method,
+            seconds_since_sms_click: secondsAway,
+          });
+        }
+      });
+      window.addEventListener("pagehide", (event) => logEvent("pagehide", { persisted: event.persisted }));
+      window.addEventListener("pageshow", (event) => logEvent("pageshow", { persisted: event.persisted }));
+      window.addEventListener("beforeunload", () => logEvent("beforeunload"));
+
+      renderUrls();
+      logEvent("page_loaded", { device: deviceSummary() });
+    </script>
+  </body>
+</html>
