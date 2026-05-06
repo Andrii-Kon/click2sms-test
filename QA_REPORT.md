@@ -185,12 +185,6 @@ JS-перехід через `window.location.href` не дав переваги
 
 Поведінка така сама, як у `smsto:number?body=...`: Android показав chooser перед відкриттям SMS app.
 
-Файл скріншота ще треба додати, якщо потрібне окреме зображення:
-
-```text
-screenshots/android-chrome-js-location-result.jpg
-```
-
 ### iPhone Safari, коректний `sms:number&body=...`
 
 Номер і текст підставились коректно.
