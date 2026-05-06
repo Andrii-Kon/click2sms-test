@@ -161,25 +161,25 @@ JS-перехід через `window.location.href` не дав переваги
 
 ### Android Chrome, початковий стан ленду
 
-![Android Chrome, початковий стан ленду](screenshots/android-chrome-initial-page.jpg.png)
+<img src="screenshots/android-chrome-initial-page.jpg.png" alt="Android Chrome, початковий стан ленду" width="320">
 
 ### Android Chrome, некоректний `sms:number&body=...`
 
 На Android цей формат відкрив SMS app, але `&body=...` потрапив у recipient/чат.
 
-![Android Chrome, некоректний sms:number&body](screenshots/android-chrome-sms-amp-result.jpg.png)
+<img src="screenshots/android-chrome-sms-amp-result.jpg.png" alt="Android Chrome, некоректний sms:number&body" width="320">
 
 ### Android Chrome, коректний `sms:number?body=...`
 
 Номер і текст підставились коректно.
 
-![Android Chrome, коректний sms:number?body](screenshots/android-chrome-sms-question-result.jpg)
+<img src="screenshots/android-chrome-sms-question-result.jpg" alt="Android Chrome, коректний sms:number?body" width="320">
 
 ### Android Chrome, `smsto:number?body=...`
 
 Після вибору SMS-додатку номер і текст підставились коректно.
 
-![Android Chrome, smsto після chooser](screenshots/android-chrome-smsto-question-result.jpg)
+<img src="screenshots/android-chrome-smsto-question-result.jpg" alt="Android Chrome, smsto після chooser" width="320">
 
 ### Android Chrome, `JS location.href`
 
@@ -189,19 +189,19 @@ JS-перехід через `window.location.href` не дав переваги
 
 Номер і текст підставились коректно.
 
-![iPhone Safari, коректний sms:number&body](screenshots/iphone-safari-sms-amp-result.jpg)
+<img src="screenshots/iphone-safari-sms-amp-result.jpg" alt="iPhone Safari, коректний sms:number&body" width="320">
 
 ### iPhone Safari, коректний `sms:number?body=...`
 
 Номер і текст підставились коректно.
 
-![iPhone Safari, коректний sms:number?body](screenshots/iphone-safari-sms-question-result.jpg)
+<img src="screenshots/iphone-safari-sms-question-result.jpg" alt="iPhone Safari, коректний sms:number?body" width="320">
 
 ### iPhone Safari, помилка для `smsto:`
 
 Safari не відкрив `smsto:` URL і показав помилку про недійсну адресу.
 
-![iPhone Safari, помилка smsto](screenshots/iphone-safari-smsto-error.jpg)
+<img src="screenshots/iphone-safari-smsto-error.jpg" alt="iPhone Safari, помилка smsto" width="320">
 
 ## Технічний appendix: які events спрацьовували
 
