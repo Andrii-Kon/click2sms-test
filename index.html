@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Click2SMS Test Bench</title>
+    <title>Click2SMS QA</title>
     <style>
       :root {
         color-scheme: light;
@@ -133,6 +133,12 @@
         font-weight: 650;
       }
 
+      .note {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
       .mono {
         font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
         font-size: 13px;
@@ -155,6 +161,10 @@
         background: #f8fafc;
       }
 
+      .compact {
+        margin-top: 6px;
+      }
+
       @media (max-width: 700px) {
         main {
           width: min(100% - 24px, 960px);
@@ -171,12 +181,12 @@
   <body>
     <main>
       <header>
-        <h1>Click2SMS Test Bench</h1>
-        <p>Use this page on real iOS and Android devices to observe SMS handoff, return behavior, and browser lifecycle events.</p>
+        <h1>Click2SMS QA</h1>
+        <p>SMS deep link behavior across mobile browsers and messaging apps.</p>
       </header>
 
       <section>
-        <h2>SMS Payload</h2>
+        <h2>SMS Configuration</h2>
         <div class="grid" style="margin-top: 12px;">
           <div>
             <label for="phone">Phone number</label>
@@ -191,34 +201,34 @@
           <label for="message">Message body</label>
           <textarea id="message">Test SMS from landing page</textarea>
         </div>
-        <p class="warning">The page can detect click/open/return signals, but it cannot confirm that the SMS was actually sent.</p>
+        <p class="note">Tracking scope: click, app handoff, page visibility, and return-to-page signals.</p>
       </section>
 
       <section>
-        <h2>Test Links</h2>
-        <p>Try each button and record whether the recipient and body are prefilled, whether the user returns automatically, and which events appear below.</p>
+        <h2>Deep Link Variants</h2>
+        <p class="compact">Android and iOS handle SMS URL formats differently, so each variant is checked separately.</p>
         <div class="actions">
           <a id="smsBodyAmp" class="button" href="#">sms:number&amp;body=...</a>
           <a id="smsBodyQuestion" class="button" href="#">sms:number?body=...</a>
           <a id="smstoBody" class="button" href="#">smsto:number?body=...</a>
           <button id="jsLocation" type="button">JS location.href</button>
-          <button id="copySummary" class="secondary" type="button">Copy Summary</button>
-          <button id="clearLog" class="secondary" type="button">Clear Log</button>
+          <button id="copySummary" class="secondary" type="button">Copy Report</button>
+          <button id="clearLog" class="secondary" type="button">Clear Events</button>
         </div>
       </section>
 
       <section>
-        <h2>Current URLs</h2>
+        <h2>Generated URLs</h2>
         <div id="urls" class="mono summary" style="margin-top: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 6px;"></div>
       </section>
 
       <section>
-        <h2>Event Log</h2>
+        <h2>Tracking Log</h2>
         <div id="log" class="mono log" aria-live="polite"></div>
       </section>
 
       <section>
-        <h2>Report Template</h2>
+        <h2>QA Report</h2>
         <textarea id="report" class="mono summary" readonly></textarea>
       </section>
     </main>
@@ -329,7 +339,7 @@
       function updateReport() {
         const current = urls();
         els.report.value = [
-          "Click2SMS test result",
+          "Click2SMS QA result",
           "",
           "Device/browser:",
           deviceSummary(),
@@ -337,7 +347,7 @@
           "URLs tested:",
           Object.entries(current).map(([key, value]) => `- ${key}: ${value}`).join("\n"),
           "",
-          "Manual observations:",
+          "Observations:",
           "- Recipient prefilled: yes/no",
           "- Body prefilled: yes/no",
           "- User returned automatically after send/cancel: yes/no",
@@ -345,8 +355,8 @@
           "- Events on leaving page:",
           "- Events on returning page:",
           "",
-          "Important limitation:",
-          "The landing page can track click/open-attempt/return signals, but cannot confirm actual SMS sending.",
+          "Tracking scope:",
+          "Click, app handoff, page visibility, and return-to-page signals are available from the landing page.",
         ].join("\n");
       }
 

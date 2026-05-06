@@ -1,6 +1,6 @@
-# Click2SMS Test Bench
+# Click2SMS QA
 
-Static test page for checking SMS URL handoff behavior on iOS and Android.
+Static QA page for checking SMS URL handoff behavior on iOS and Android.
 
 ## Deploy With GitHub Pages
 
@@ -18,11 +18,11 @@ The published page will look like:
 https://YOUR_USERNAME.github.io/click2sms-test/
 ```
 
-## What To Test
+## QA Scope
 
 - Whether the SMS recipient is prefilled.
 - Whether the SMS message body is prefilled.
 - Whether the user returns to the landing page automatically.
 - Which browser lifecycle events fire when leaving and returning.
 
-The page can track click and return signals, but cannot confirm that the SMS was actually sent.
+The page tracks click, app handoff, page visibility, and return-to-page signals.
