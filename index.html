@@ -190,7 +190,7 @@
         <div class="grid" style="margin-top: 12px;">
           <div>
             <label for="phone">Phone number</label>
-            <input id="phone" autocomplete="tel" value="+380000000000">
+            <input id="phone" autocomplete="tel" value="+380936597541">
           </div>
           <div>
             <label for="campaign">Campaign label</label>
@@ -241,6 +241,11 @@
 
       const startedAt = Date.now();
       let lastSmsAttempt = null;
+      const storageKeys = {
+        phone: "click2sms.phone",
+        message: "click2sms.message",
+        campaign: "click2sms.campaign",
+      };
 
       const els = {
         phone: document.querySelector("#phone"),
@@ -323,6 +328,30 @@
         updateReport();
       }
 
+      function restoreSavedConfig() {
+        const savedPhone = localStorage.getItem(storageKeys.phone);
+        const savedMessage = localStorage.getItem(storageKeys.message);
+        const savedCampaign = localStorage.getItem(storageKeys.campaign);
+
+        if (savedPhone) {
+          els.phone.value = savedPhone;
+        }
+
+        if (savedMessage) {
+          els.message.value = savedMessage;
+        }
+
+        if (savedCampaign) {
+          els.campaign.value = savedCampaign;
+        }
+      }
+
+      function saveConfig() {
+        localStorage.setItem(storageKeys.phone, els.phone.value.trim());
+        localStorage.setItem(storageKeys.message, els.message.value);
+        localStorage.setItem(storageKeys.campaign, els.campaign.value.trim());
+      }
+
       function markSmsAttempt(method, url) {
         lastSmsAttempt = {
           method,
@@ -361,9 +390,18 @@
       }
 
       ["input", "change"].forEach((eventName) => {
-        els.phone.addEventListener(eventName, renderUrls);
-        els.message.addEventListener(eventName, renderUrls);
-        els.campaign.addEventListener(eventName, updateReport);
+        els.phone.addEventListener(eventName, () => {
+          saveConfig();
+          renderUrls();
+        });
+        els.message.addEventListener(eventName, () => {
+          saveConfig();
+          renderUrls();
+        });
+        els.campaign.addEventListener(eventName, () => {
+          saveConfig();
+          updateReport();
+        });
       });
 
       [
@@ -419,6 +457,7 @@
       window.addEventListener("pageshow", (event) => logEvent("pageshow", { persisted: event.persisted }));
       window.addEventListener("beforeunload", () => logEvent("beforeunload"));
 
+      restoreSavedConfig();
       renderUrls();
       logEvent("page_loaded", { device: deviceSummary() });
     </script>
